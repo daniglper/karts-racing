@@ -1,7 +1,9 @@
 import http from "http";
 import express, { Express } from "express";
 import morgan from "morgan";
-import routes from "./routes/posts";
+import routes from "./routes/pilot-routes";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 
 const router: Express = express();
 
@@ -40,9 +42,28 @@ router.use((req, res, next) => {
   });
 });
 
+// Load .env
+dotenv.config();
+
 /** Server */
 const httpServer = http.createServer(router);
-const PORT: any = process.env.PORT ?? 6060;
+const PORT: any = process.env.PORT;
 httpServer.listen(PORT, () =>
   console.log(`The server is running on port ${PORT}`)
+);
+
+const DB_URI: any = process.env.DB_URI;
+mongoose.connect(
+  DB_URI,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  (err: any) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Connected to MongoDb");
+    }
+  }
 );
