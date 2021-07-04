@@ -17,7 +17,7 @@ Current routes are:
   "team": "teamPrueba1",
   "races": {
   "name": "race1",
-  "lap": {
+  "laps": {
   "time": "00:10:09.056"
   }
   }
@@ -25,7 +25,7 @@ Current routes are:
 - /addRace (POST): add a new race to a pilot or updates a existing one
   Example JSON:
   {
-  "pilotId":"fYvINXG3ZU3ttPqEVZxe4n9N",
+  "pilot":"May Valentine",
   "race": {
   "name": "race1",
   "laps": [{
@@ -40,7 +40,7 @@ Current routes are:
 - /addLap (POST): add a new lap to a pilot's race if it has less than 10
   Example JSON:
   {
-  "pilotId": "J4GFxb3L3tLabfZcpd5Ca9x0",
+  "pilot": "May Valentine",
   "raceName": "race1",
   "lap": {
   "time": "00:10:01.000"

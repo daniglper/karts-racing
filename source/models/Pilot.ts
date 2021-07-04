@@ -19,8 +19,7 @@ export interface ILap {
 // Schema
 const PilotSchema = new Schema({
   _id: {
-    type: String,
-    required: true,
+    type: String
   },
   age: {
     type: Number,
@@ -38,8 +37,14 @@ const PilotSchema = new Schema({
   },
   races: [
     {
+      _id: String,
       name: String,
-      laps: [{ time: String }],
+      laps: [
+        {
+          _id: String,
+          time: String,
+        },
+      ],
     },
   ],
 });

@@ -34,16 +34,16 @@ const addPilot = async (req: Request, res: Response, next: NextFunction) => {
 
 const addRace = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.body?.pilotId || !req.body?.race) {
+    if (!req.body?.pilot || !req.body?.race) {
       return res.status(400).json({
-        message: "A pilotId and a race are necessary to add a race",
+        message: "A pilot and a race are necessary to add a race",
       });
     }
 
-    let pilot = await Pilot.findOne({ _id: req.body.pilotId });
+    let pilot = await Pilot.findOne({ name: req.body.pilot });
 
     if (!pilot) {
-      return res.status(400).json({ message: "This pilotId doesn't exist" });
+      return res.status(400).json({ message: "This pilot doesn't exist" });
     }
 
     const indexExistingRace = pilot.races.findIndex(
@@ -71,17 +71,16 @@ const addRace = async (req: Request, res: Response, next: NextFunction) => {
 
 const addLap = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.body?.pilotId || !req.body?.raceName || !req.body?.lap) {
+    if (!req.body?.pilot || !req.body?.raceName || !req.body?.lap) {
       return res.status(400).json({
-        message:
-          "A pilotId, a raceName and a lap are necessary to add a lap",
+        message: "A pilot, a raceName and a lap are necessary to add a lap",
       });
     }
 
-    let pilot = await Pilot.findOne({ _id: req.body.pilotId });
+    let pilot = await Pilot.findOne({ name: req.body.pilot });
 
     if (!pilot) {
-      return res.status(400).json({ message: "This pilotId doesn't exist" });
+      return res.status(400).json({ message: "This pilot doesn't exist" });
     }
 
     const race = pilot.races?.find((x) => x.name === req.body.raceName);
