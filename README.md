@@ -16,7 +16,7 @@ Current routes are:
   "name": "prueba1",
   "team": "teamPrueba1",
   "races": {
-  "name": "race1",
+  "name": ""Race 0",
   "laps": {
   "time": "00:10:09.056"
   }
@@ -25,9 +25,9 @@ Current routes are:
 - /addRace (POST): add a new race to a pilot or updates a existing one
   Example JSON:
   {
-  "pilot":"May Valentine",
+  "pilot":"prueba1",
   "race": {
-  "name": "race1",
+  "name": ""Race 1",
   "laps": [{
   "time": "00:10:09.000"
   },{
@@ -40,9 +40,14 @@ Current routes are:
 - /addLap (POST): add a new lap to a pilot's race if it has less than 10
   Example JSON:
   {
-  "pilot": "May Valentine",
-  "raceName": "race1",
+  "pilot": "prueba1",
+  "race": ""Race 1",
   "lap": {
   "time": "00:10:01.000"
   }
+  }
+- /getRaceResult (POST): get the classification of a race
+  Example JSON:
+  {
+  "race": "Race 1"
   }

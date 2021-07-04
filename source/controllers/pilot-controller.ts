@@ -1,5 +1,19 @@
 import { Request, Response, NextFunction } from "express";
+import * as pilotHelper from "../helpers/pilot-helper";
 import { Pilot } from "../models/Pilot";
+import { RaceResult } from "../models/Results";
+
+const getAllPilots = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // get all pilots
+  const pilots = await Pilot.find();
+
+  // return
+  return res.status(200).json(pilots);
+};
 
 const addPilot = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -17,8 +31,10 @@ const addPilot = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
+    //TODO: check that every race has a maximum of 10 laps
+
     // Generate new random _id
-    const _id = await generateRandomPilotId();
+    const _id = await pilotHelper.calcRandomPilotId();
 
     // add pilot
     let newPilot = new Pilot({ _id, ...req.body });
@@ -50,6 +66,8 @@ const addRace = async (req: Request, res: Response, next: NextFunction) => {
       (x) => x.name === req.body.race.name
     );
 
+    //TODO: check that has a maximum of 10 laps
+
     if (indexExistingRace > -1) {
       pilot.races[indexExistingRace] = req.body.race;
 
@@ -71,9 +89,9 @@ const addRace = async (req: Request, res: Response, next: NextFunction) => {
 
 const addLap = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.body?.pilot || !req.body?.raceName || !req.body?.lap) {
+    if (!req.body?.pilot || !req.body?.race || !req.body?.lap) {
       return res.status(400).json({
-        message: "A pilot, a raceName and a lap are necessary to add a lap",
+        message: "A pilot, a race and a lap are necessary to add a lap",
       });
     }
 
@@ -83,7 +101,7 @@ const addLap = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(400).json({ message: "This pilot doesn't exist" });
     }
 
-    const race = pilot.races?.find((x) => x.name === req.body.raceName);
+    const race = pilot.races?.find((x) => x.name === req.body.race);
 
     if (!race) {
       return res
@@ -103,41 +121,55 @@ const addLap = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getAllPilots = async (
+const getRaceResult = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  // get all pilots
-  const pilots = await Pilot.find();
+  try {
+    if (!req.body?.race) {
+      return res.status(400).json({
+        message: "A race is necessary to get its results",
+      });
+    }
 
-  // return
-  return res.status(200).json(pilots);
+    const pilots = await Pilot.find({
+      races: {
+        $all: [
+          {
+            $elemMatch: {
+              name: req.body.race,
+              laps: {
+                $size: 10,
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    if (!pilots?.length) {
+      return res.status(400).json({
+        message: "This race doesn't exist or it has no pilots with 10 laps",
+      });
+    }
+
+    const raceResult: RaceResult = pilotHelper.calcRaceResult(
+      req.body.race,
+      pilots
+    );
+
+    return res.status(200).json({ raceResult });
+  } catch (error) {
+    //error
+    return res.status(500).json({ message: "Error", error });
+  }
 };
 
 export default {
+  getAllPilots,
   addPilot,
   addRace,
   addLap,
-  getAllPilots,
+  getRaceResult,
 };
-
-async function generateRandomPilotId(): Promise<string> {
-  // TODO: Improvable, but will do for now
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let existingId = true;
-  let id: string = "";
-
-  // loop if the id already exists
-  while (existingId) {
-    id = "";
-    for (let i = 0; i < 24; i++) {
-      id += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-
-    existingId = await Pilot.exists({ _id: id });
-  }
-
-  return id;
-}
