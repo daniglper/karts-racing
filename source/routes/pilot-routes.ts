@@ -8,5 +8,6 @@ router.post("/addRace", controller.addRace);
 router.post("/addLap", controller.addLap);
 router.post("/getRaceClassification", controller.getRaceClassification);
 router.get("/getGeneralClassification", controller.getGeneralClassification);
+router.post("/getPilotDetails", controller.getPilotDetails);
 
 export = router;

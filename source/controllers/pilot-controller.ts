@@ -1,7 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import * as pilotHelper from "../helpers/pilot-helper";
 import { Pilot } from "../models/Pilot";
-import { PilotGeneralResult, RaceResult } from "../models/Results";
+import {
+  PilotDetails,
+  PilotGeneralResult,
+  RaceResult,
+} from "../models/Results";
 
 const getAllPilots = async (
   req: Request,
@@ -188,6 +192,35 @@ const getGeneralClassification = async (
   }
 };
 
+const getPilotDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.body?.pilot) {
+      return res.status(400).json({
+        message: "A pilot is necessary to get its results",
+      });
+    }
+
+    const pilot = await Pilot.findOne({ name: req.body.pilot });
+
+    const pilots = await Pilot.find();
+
+    if (!pilot) {
+      return res.status(400).json({ message: "This pilot doesn't exist" });
+    }
+
+    const pilotDetails: PilotDetails = pilotHelper.calcPilotDetails(pilot,pilots);
+
+    return res.status(200).json({ pilotDetails });
+  } catch (error) {
+    //error
+    return res.status(500).json({ message: "Error", error });
+  }
+};
+
 export default {
   getAllPilots,
   addPilot,
@@ -195,4 +228,5 @@ export default {
   addLap,
   getRaceClassification,
   getGeneralClassification,
+  getPilotDetails
 };

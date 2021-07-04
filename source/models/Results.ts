@@ -26,3 +26,15 @@ export interface PilotGeneralResult {
   points: number;
   racesAttended: number;
 }
+
+export interface PilotDetails {
+  pilot: string;
+  races: PilotDetailsRace[];
+}
+
+export interface PilotDetailsRace {
+  race: string;
+  time: string;
+  bestLap: string;
+  points: number;
+}

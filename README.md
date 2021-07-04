@@ -53,5 +53,9 @@ Current routes are:
   {
   "race": "Race 1"
   }
-
 - /getGeneralClassification (GET): get the general classification
+- /getPilotDetails (POST): get the details of a pilot
+  Example JSON:
+  {
+  "pilot": "May Valentine"
+  }

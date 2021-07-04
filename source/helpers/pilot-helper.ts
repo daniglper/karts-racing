@@ -1,5 +1,6 @@
 import { ILap, IPilot, Pilot } from "../models/Pilot";
 import {
+  PilotDetails,
   PilotGeneralResult,
   PilotRaceData,
   RaceResult,
@@ -126,6 +127,37 @@ export function calcGeneralResult(pilots: IPilot[]): PilotGeneralResult[] {
   );
 
   return pilotGeneralResults;
+}
+
+export function calcPilotDetails(
+  pilot: IPilot,
+  allPilots: IPilot[]
+): PilotDetails {
+  const pilotDetails: PilotDetails = {
+    pilot: pilot.name,
+    races: [],
+  };
+
+  pilot.races = pilot.races?.filter((x) => x.laps?.length === 10);
+
+  pilot.races.forEach((race) => {
+    const raceResult = calcRaceResult(race.name, allPilots);
+
+    const pilotResult = raceResult.classification.find(
+      (x) => x.pilot === pilot.name
+    );
+
+    if (pilotResult) {
+      pilotDetails.races.push({
+        race: race.name,
+        time: pilotResult.time,
+        bestLap: pilotResult.bestLap,
+        points: pilotResult.points,
+      });
+    }
+  });
+
+  return pilotDetails;
 }
 
 /*
