@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as pilotHelper from "../helpers/pilot-helper";
 import { Pilot } from "../models/Pilot";
-import { RaceResult } from "../models/Results";
+import { PilotGeneralResult, RaceResult } from "../models/Results";
 
 const getAllPilots = async (
   req: Request,
@@ -159,7 +159,29 @@ const getRaceClassification = async (
       pilots
     );
 
+    raceResult.classification.forEach((x) => delete x.timeNumber);
+
     return res.status(200).json({ raceResult });
+  } catch (error) {
+    //error
+    return res.status(500).json({ message: "Error", error });
+  }
+};
+
+const getGeneralClassification = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const pilots = await Pilot.find({});
+
+    const pilotGeneralResults: PilotGeneralResult[] =
+      pilotHelper.calcGeneralResult(pilots);
+
+    pilotGeneralResults.forEach((x) => delete x.timeNumber);
+
+    return res.status(200).json({ pilotGeneralResults });
   } catch (error) {
     //error
     return res.status(500).json({ message: "Error", error });
@@ -172,4 +194,5 @@ export default {
   addRace,
   addLap,
   getRaceClassification,
+  getGeneralClassification,
 };

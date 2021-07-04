@@ -16,10 +16,12 @@ Current routes are:
   "name": "prueba1",
   "team": "teamPrueba1",
   "races": {
-  "name": ""Race 0",
-  "laps": {
+  "name": "race1",
+  "laps": [
+  {
   "time": "00:10:09.056"
   }
+  ]
   }
   }
 - /addRace (POST): add a new race to a pilot or updates a existing one
@@ -51,3 +53,5 @@ Current routes are:
   {
   "race": "Race 1"
   }
+
+- /getGeneralClassification (GET): get the general classification

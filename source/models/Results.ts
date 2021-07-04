@@ -7,6 +7,7 @@ export interface RaceResultPilot {
   position: number;
   pilot: string;
   time: string;
+  timeNumber?: number;
   bestLap: string;
   points: number;
 }
@@ -16,4 +17,12 @@ export interface PilotRaceData {
   time: number;
   bestLapTime: number;
   bestLap: string;
+}
+
+export interface PilotGeneralResult {
+  pilot: string;
+  time: string;
+  timeNumber?: number;
+  points: number;
+  racesAttended: number;
 }

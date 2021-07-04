@@ -1,5 +1,10 @@
 import { ILap, IPilot, Pilot } from "../models/Pilot";
-import { PilotRaceData, RaceResult, RaceResultPilot } from "../models/Results";
+import {
+  PilotGeneralResult,
+  PilotRaceData,
+  RaceResult,
+  RaceResultPilot,
+} from "../models/Results";
 import Big from "big.js";
 
 const classificationPoints = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
@@ -60,6 +65,7 @@ export function calcRaceResult(race: string, pilots: IPilot[]): RaceResult {
       position: index + 1,
       pilot: pilotResult.pilot,
       time: calcStringTime(pilotResult.time),
+      timeNumber: pilotResult.time,
       bestLap: pilotResult.bestLap,
       points: index < 10 ? classificationPoints[index] : 0,
     };
@@ -72,6 +78,59 @@ export function calcRaceResult(race: string, pilots: IPilot[]): RaceResult {
 
   return raceResult;
 }
+
+export function calcGeneralResult(pilots: IPilot[]): PilotGeneralResult[] {
+  const races: string[] = [];
+  // Filter only races with 10 laps
+  pilots.forEach((pilot) => {
+    pilot.races = pilot?.races.filter((x) => x.laps?.length === 10);
+
+    // get the races with at least 1 pilot with 10 laps
+    pilot.races.forEach((race) => {
+      if (!races.some((x) => x === race.name)) races.push(race.name);
+    });
+  });
+
+  const raceResults = races.map((x) => calcRaceResult(x, pilots));
+
+  const pilotGeneralResults: PilotGeneralResult[] = pilots.map((x) => {
+    return {
+      pilot: x.name,
+      time: "",
+      timeNumber: 0,
+      points: 0,
+      racesAttended: 0,
+    };
+  });
+
+  raceResults.forEach((raceResult) => {
+    raceResult.classification.forEach((pilotRaceResult) => {
+      const pilot = pilotGeneralResults.find(
+        (x) => x.pilot === pilotRaceResult.pilot
+      );
+
+      if (pilot) {
+        pilot.points += pilotRaceResult.points;
+        pilot.timeNumber = new Big(pilot.timeNumber ?? 0)
+          .add(pilotRaceResult.timeNumber ?? 0)
+          .toNumber();
+        pilot.racesAttended++;
+      }
+    });
+  });
+
+  pilotGeneralResults.sort((a, b) => b.points - a.points);
+
+  pilotGeneralResults.forEach(
+    (x) => (x.time = calcStringTime(x.timeNumber ?? 0))
+  );
+
+  return pilotGeneralResults;
+}
+
+/*
+ *  Private functions
+ */
 
 function calcPilotRaceData(pilot: string, laps: ILap[]): PilotRaceData {
   try {
