@@ -46,7 +46,7 @@ Current routes are:
   "time": "00:10:01.000"
   }
   }
-- /getRaceResult (POST): get the classification of a race
+- /getRaceClassification (POST): get the classification of a race
   Example JSON:
   {
   "race": "Race 1"

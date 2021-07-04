@@ -121,7 +121,7 @@ const addLap = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getRaceResult = async (
+const getRaceClassification = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -171,5 +171,5 @@ export default {
   addPilot,
   addRace,
   addLap,
-  getRaceResult,
+  getRaceClassification,
 };
