@@ -11,7 +11,6 @@ import Big from "big.js";
 const classificationPoints = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 
 export async function calcRandomPilotId(): Promise<string> {
-  // TODO: Improvable, but will do for now
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let existingId = true;

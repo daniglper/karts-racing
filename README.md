@@ -8,11 +8,13 @@ Use guide:
 4. "npm start" to start the application
 5. /populateDB (GET) to get the DB started
 
+For all calculations, only races with 10 laps will be taken into account.
+
 Current routes are:
 
 - /populateDB (GET): populates the DB with the starting data
 - /getAllPilots (GET): get a list of all pilots data
-- /addPilot (POST): add a new pilot based on the request body (only name and team are required)
+- /addPilot (POST): add a new pilot based on the request body (only name and team are required, _id can be given or automatically generated)
   Example JSON:
   {
   "name": "prueba1",

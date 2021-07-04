@@ -49,13 +49,17 @@ const addPilot = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    //TODO: check that every race has a maximum of 10 laps
-
     // Generate new random _id
     const _id = await pilotHelper.calcRandomPilotId();
 
     // add pilot
-    let newPilot = new Pilot({ _id, ...req.body });
+    let newPilot = new Pilot({ _id: req.body._id ?? _id, ...req.body });
+
+    if (newPilot.races?.some((x) => x.laps?.length > 10))
+      return res.status(400).json({
+        message: "A race can only have up to 10 laps",
+      });
+
     newPilot = await Pilot.create(newPilot);
 
     // return
@@ -72,7 +76,10 @@ const addRace = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(400).json({
         message: "A pilot and a race are necessary to add a race",
       });
-    }
+    } else if (req.body.race.laps?.length > 10)
+      return res.status(400).json({
+        message: "A race can only have up to 10 laps",
+      });
 
     let pilot = await Pilot.findOne({ name: req.body.pilot });
 
@@ -83,8 +90,6 @@ const addRace = async (req: Request, res: Response, next: NextFunction) => {
     const indexExistingRace = pilot.races.findIndex(
       (x) => x.name === req.body.race.name
     );
-
-    //TODO: check that has a maximum of 10 laps
 
     if (indexExistingRace > -1) {
       pilot.races[indexExistingRace] = req.body.race;
