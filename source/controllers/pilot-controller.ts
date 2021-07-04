@@ -1,11 +1,25 @@
 import { Request, Response, NextFunction } from "express";
 import * as pilotHelper from "../helpers/pilot-helper";
-import { Pilot } from "../models/Pilot";
+import { IPilot, Pilot } from "../models/Pilot";
 import {
   PilotDetails,
   PilotGeneralResult,
   RaceResult,
 } from "../models/Results";
+import fs from "fs";
+
+const populateDB = async (req: Request, res: Response, next: NextFunction) => {
+  await Pilot.deleteMany();
+
+  const pilots: IPilot[] = JSON.parse(
+    fs.readFileSync("data/drivers_karts_Back.json", "utf8")
+  );
+
+  pilots.forEach((pilot) => Pilot.create(new Pilot({ ...pilot })));
+
+  // return
+  return res.status(200).json({ message: "DB populated" });
+};
 
 const getAllPilots = async (
   req: Request,
@@ -212,7 +226,10 @@ const getPilotDetails = async (
       return res.status(400).json({ message: "This pilot doesn't exist" });
     }
 
-    const pilotDetails: PilotDetails = pilotHelper.calcPilotDetails(pilot,pilots);
+    const pilotDetails: PilotDetails = pilotHelper.calcPilotDetails(
+      pilot,
+      pilots
+    );
 
     return res.status(200).json({ pilotDetails });
   } catch (error) {
@@ -222,11 +239,12 @@ const getPilotDetails = async (
 };
 
 export default {
+  populateDB,
   getAllPilots,
   addPilot,
   addRace,
   addLap,
   getRaceClassification,
   getGeneralClassification,
-  getPilotDetails
+  getPilotDetails,
 };
